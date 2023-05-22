@@ -10,13 +10,13 @@ import config
 
 
 movies = []
-genres = []
+genresL = []
 decades = []
 ratings = []
 
 class Movie:
     def __init__(self, id):
-        url = f"https://api.themoviedb.org/3/{id}/550?api_key={config.key}"
+        url = f"https://api.themoviedb.org/3/movie/{id}?api_key={config.key}"
         response = requests.get(url)
         data = response.json()
         loadData = json.loads(data)
@@ -28,46 +28,34 @@ class Movie:
         self.genres = []
         for genres in loadData['genres']:
             self.genres.append(genres['name'])
-        genres.append(self.genres)
+            genresL.append(genres['name'])
         ratings.append(self.rating)
         decades.append(self.year[:4])
         self.language = loadData['original_language']
         
 def plots():
-    fig1, ax1 = plot.subplot()
-    ax1.hist(ratings, bins = 'auto')
-    ax1.xlabel("Ratings")
-    ax1.ylabel("Frequency")
-    ax1.title("Frequency of Ratings")
+   plot.subplot(3, 1, 1)
+   plot.hist(ratings, bins = 'auto')
+   plot.xlabel("Ratings")
+   plot.ylabel("Frequency")
+   plot.title("Frequency of Ratings")
 
-    fig2, ax2 = plot.subplot()
-    ax2.hist(genres, bins = 'auto')
-    ax2.xlabel("Genres")
-    ax2.ylabel("Frequency")
-    ax2.title("Frequency of Genres")
+   plot.subplot(3, 1, 2)
+   plot.hist(genresL, bins='auto')
+   plot.xlabel("Genres")
+   plot.ylabel("Frequency")
+   plot.title("Frequency of Genres")
 
-    for year in decades:
-        year += '0'
+   decadeInt = [int(x) * 10 for x in decades]
 
-    fig3, ax3 = plot.subplot()
-    ax3.hist(decades, bins = 'auto')
-    ax3.xlabel("Decades")
-    ax3.ylabel("Frequency")
-    ax3.title("Frequency of Decades")
+   plot.subplot(3, 1, 3)
+   plot.hist(decadeInt, bins = 'auto')
+   plot.xlabel("Decades")
+   plot.ylabel("Frequency")
+   plot.title("Frequency of Decades")
 
-    canvas1 = FigureCanvasAgg(fig1)
-    ratingsHist = canvas1.print_to_buffer()
-
-    canvas2 = FigureCanvasAgg(fig2)
-    genresHist = canvas2.print_to_buffer()
-
-    canvas3 = FigureCanvasAgg(fig3)
-    yearsHist = canvas3.print_to_buffer()
-
-    return [ratingsHist, genresHist, yearsHist]
-
-
-
+   plot.tight_layout()
+   plot.show()
 
 
 def parse_args(arglist):
@@ -89,16 +77,12 @@ if __name__ == "__main__":
 
     for i in range(min(20, len(movies))):
         genrestr = ', '.join(str(genre) for genre in movies[i].genres)
-        string = (f"""\n\n{i+1}. Movie Name: {movies[i].name}     Year: {movies[i].year}       TMDB Rating: {movies[i].rating}\n
-              Description: {movies[i].description}\nRuntime: {movies[i].runtime}       Languages: {movies[i].language}\nGenres: {genrestr}""")
-        print(textwrap.fill(string, 35))
+        string = (f"""\n\n{i+1}. Movie Name: {movies[i].title}     Year: {movies[i].year}       TMDB Rating: {movies[i].rating}
+                \nDescription: {movies[i].description}\nRuntime: {movies[i].runtime}       Languages: {movies[i].language}\nGenres: {genrestr}""")
+        print(string)
 
     print("\n\n\nNow Here is some cool data about the movies you were recommended")
-    plotList = plots()
-    for plt in plotList:
-        plot.figure()
-        plot.imshow(plt)
-        plot.show()
+    plots()
 
 
 

@@ -27,7 +27,7 @@ To enhance the user experience and provide a better understanding of movie prefe
 1. Set up your Letterboxd account and ensure you have a watch history.
 2. Run the Movie Recommender script:
    ```
-   python movie_recommender.py [username]
+   python main.py [username]
    ```
 3. Wait for the Movie Recommender to generate personalized recommendations and display data plots.
 4. Explore the recommendations and enjoy watching your next movie!
